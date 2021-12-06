@@ -1,0 +1,19 @@
+.activitystats {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-evenly;
+}
+
+.activitystats-item {
+    /*border-right: 1px solid lightgray;*/
+}
+.activitystats-item__label {
+    font-size: 0.6em;
+}
+
+.activitystats-item__label {
+
+}
+

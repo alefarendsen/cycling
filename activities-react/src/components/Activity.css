@@ -1,0 +1,20 @@
+
+.activity {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.activity-performance__toggle {
+    width:100%;
+    color: cadetblue;
+    text-align:right;
+    font-size: .6em;
+    padding-bottom: -10px;
+}
+
