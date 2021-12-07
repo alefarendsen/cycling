@@ -1,6 +1,15 @@
 import './ActivityPerformanceData.css';
 import {useState, useEffect} from "react";
-import {ResponsiveContainer, Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend} from "recharts";
+import {
+    ResponsiveContainer,
+    Line,
+    LineChart,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Brush,
+} from "recharts";
 
 function ActivityPerformanceData(props) {
 
@@ -11,14 +20,43 @@ function ActivityPerformanceData(props) {
             .then(res => res.json())
             .then(
                 (data) => {
-                    console.log("Found " + data.length + " entries");
-                    setGraphData(
-                    data.map(line => {
+                    // transforming the data
+
+                    // 1. first select every 5th element, to reduce data size
+                    data = data.filter(line => {
+                        return line.time % 5 === 0;
+                    });
+
+                    // 2. now change the time to a sensible format, i.e.
+                    data = data.map(line => {
+                        let hours = Math.floor(line.time / 3600);
+                        let remainder = line.time % 3600;
+                        let minutes = Math.floor(remainder / 60);
+                        if (minutes < 10) {
+                            minutes = "0" + minutes;
+                        }
+                        let seconds = remainder % 60;
+                        if (seconds < 10) {
+                            seconds = "0" + seconds;
+                        }
+                        let time = "";
+                        if (hours !== 0) {
+                            time = time + hours + ":";
+                        }
+                        time = time + minutes + ":" + seconds;
                         return {
-                            time: line.time,
+                            time: time,
                             heartRate: line.heartRate,
                             power: line.watts
-                        };
+                        }
+                    });
+                    setGraphData(
+                        data.map(line => {
+                            return {
+                                time: line.time,
+                                heartRate: line.heartRate,
+                                power: line.power
+                            };
                     }));
                 }
             )
@@ -26,26 +64,37 @@ function ActivityPerformanceData(props) {
 
     return (
         <div className="activityperformancedata">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={200}>
+                <LineChart
+                    width={500} height={150} data={graphData} syncId="anyId"
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" />
+                    <YAxis domain={['dataMin -10', 'dataMax + 10']}/>
+                    <Tooltip  />
+                    <Line isAnimationActive={false} type="monotone" dot={false} name=" Heart Rate" dataKey="heartRate" stroke="#8884d8" fill="#8884d8" />
+                </LineChart>
+            </ResponsiveContainer>
+
+            <ResponsiveContainer width="100%" height={200}>
                 <LineChart
                     width={500}
-                    height={300}
+                    height={150}
                     data={graphData}
+                    syncId="anyId"
                     margin={{
-                        top: 5,
+                        top: 10,
                         right: 30,
-                        left: 20,
-                        bottom: 5,
+                        left: 0,
+                        bottom: 0,
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="time" />
-                    <YAxis yAxisId="left" />
-                    <YAxis yAxisId="right" orientation="right" />
+                    <YAxis />
                     <Tooltip />
-                    <Legend />
-                    <Line yAxisId="left" type="monotone" dot={false} dataKey="heartRate" name="Heart Rate (BPM)" stroke="#8884d8"/>
-                    <Line yAxisId="right" type="monotone" dot={false} dataKey="power" name="Power (W)" stroke="#82ca9d"/>
+                    <Line isAnimationActive={false} type="monotone" dot={false} dataKey="power" stroke="#82ca9d" fill="#82ca9d" />
+                    <Brush />
                 </LineChart>
             </ResponsiveContainer>
 
