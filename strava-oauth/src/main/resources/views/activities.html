@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+</head>
+<body>
+<h1><a href="/">Home</a> &rarr; Activities</h1>
+<nav>
+    <ul th:each="activity: ${activities}">
+        <li th:text="${activity.name}"/>
+    </ul>
+</nav>
+</body>
+</html>
